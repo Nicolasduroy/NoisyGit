@@ -2,7 +2,7 @@ clear all;
 close all;
 
 fs = 16000;
-Nq = 7;
+Nq = 4;
 M = 2^Nq;
 fftSize = 2^10; %% DFTsize N
 cpr = fftSize/2;
@@ -37,12 +37,12 @@ qamtrain = [];
 
 Tx = ofdm_mod(qamStream, qamtrainblock, frameSize, fftSize, cpr, Ld, Lt);
 
-load("IRest.mat");
-impRespCh = h;
-t = linspace(0,500,500);
-
-fresp_h = fft(h, fftSize);
-f = linspace(0, fs/2, fftSize);
+% load("IRest.mat");
+% impRespCh = h;
+% t = linspace(0,500,500);
+% 
+% fresp_h = fft(h, fftSize);
+% f = linspace(0, fs/2, fftSize);
 
 % figure;
 % subplot(2,1,1);
@@ -57,14 +57,14 @@ f = linspace(0, fs/2, fftSize);
 %     ylabel('Imulse Response amplitude');
 
     
-Rx = fftfilt(impRespCh,Tx);
-% pulse = [0; 1; 1; 1; 0];
-% IRlength = 511;
-% [simin, nbsecs, fs] = initparams(Tx, pulse, IRlength, fs);
-% sim('recplay');
-% out = simout.signals.values;
+% Rx = fftfilt(impRespCh,Tx);
+pulse = [0; 1; 1; 1; 0];
+IRlength = 511;
+[simin, nbsecs, fs] = initparams(Tx, pulse, IRlength, fs);
+sim('recplay');
+out = simout.signals.values;
 
-% Rx = alignIO(out, pulse, IRlength, length(Tx));
+Rx = alignIO(out, pulse, IRlength, length(Tx));
 
 %% OFDM-demodulate
 [receivedQam, fresp_est] = visualize_demod(Rx, fftSize, cpr, qamtrainblock, fs, Lt, Ld, M);
