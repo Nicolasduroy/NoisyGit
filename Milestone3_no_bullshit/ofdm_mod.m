@@ -1,9 +1,11 @@
-function ofdmSeq = ofdm_mod(qamStream, qamtrainblock, qamNo, fftSize, cpr, Ld, Lt)
+function ofdmSeq = ofdm_mod(qamStream, qamtrainblock, frameSize, fftSize, cpr, Ld, Lt)
 
 
 
 % cfr. figure 2: M-ary QAM OFDM frames and packet
 % frame: 0 QAM_i 0 QAM_i*
+
+
 
 %% setup trainingpackage
 qamtrain = [];
@@ -12,27 +14,30 @@ for i = 1:Lt
    qamtrain = [qamtrain; qamtrainblock]; 
 end
 
-P_train = length(qamtrain)/qamNo;
-Trainingpacket = reshape(qamtrain, qamNo, P_train);
+P_train = length(qamtrain)/frameSize;
+Trainingpacket = reshape(qamtrain, frameSize, P_train);
+if Ld == 0
+    packet = Trainingpacket;
+else
+    %% setup datapackage
+    P_data = length(qamStream)/frameSize;
+    Datapacket = reshape(qamStream, frameSize, P_data);
+    [~,C] = size(Datapacket);
 
-%% setup datapackage
-P_data = length(qamStream)/qamNo;
-Datapacket = reshape(qamStream, qamNo, P_data);
-[~,C] = size(Datapacket);
+    %% Setup whole package
 
-%% Setup whole package
-packet = [];
-i = 1;
-while i < C 
-    if i+2*Ld > C
-        packet = [packet,Trainingpacket, Datapacket(:,i:i+Ld-1)];
-        packet = [packet,Trainingpacket, Datapacket(:,i+Ld:end)];
-    else
-        packet = [packet,Trainingpacket, Datapacket(:,i:i+Ld-1)];
+    packet = [];
+    i = 1;
+    while i < C 
+        if i+2*Ld > C
+            packet = [packet,Trainingpacket, Datapacket(:,i:i+Ld-1)];
+            packet = [packet,Trainingpacket, Datapacket(:,i+Ld:end)];
+        else
+            packet = [packet,Trainingpacket, Datapacket(:,i:i+Ld-1)];
+        end
+        i = i+Ld;
     end
-    i = i+Ld;
 end
-
 
 % Explain the necessity of the `mirror operation' in each frame from a signal processing point of view.
 % To ensure the time domain is real_valued

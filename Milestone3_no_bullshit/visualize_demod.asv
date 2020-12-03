@@ -1,7 +1,7 @@
 %%%%% zie slide 29/40
 function [demodulatedSequence, fresp_est] = visualize_demod(ofdmSeq, fftSize, cpr, qamtrainblock, fs, Lt, Ld, M, channelselector)
 if ~exist('channelselector','var')
-    channelselector = ones(fftSize/2-1, 1);
+    channelselector = ones(fftsize/2-1);
 
 [Streamblock, imageData, colorMap, imageSize, bitsPerPixel] = imagetobitstream('image.bmp');
 %% Unchanged part for training/Data
@@ -55,7 +55,7 @@ while p < P
         xlabel('filtertaps');
         ylabel('Impulse Response amplitude');
     subplot(2,2,3);
-        im2 = plot(f, fresp_est.*[1;channelselector;1;flipud(channelselector)]);
+        im2 = plot(f, fresp_est*[1;channelselector;1;flipud();
         drawnow
         title('Estimate of impulse response: frequency-domain');
         xlabel('frequency');
