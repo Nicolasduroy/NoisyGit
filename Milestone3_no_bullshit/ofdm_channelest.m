@@ -7,7 +7,7 @@ M = 2^Nq;
 fftSize = 2^10; %% DFTsize N
 cpr = fftSize/2;
 Lt = 2;
-Ld = 6;
+Ld = 19;
 
 %% Trainblock needed of N/2-1 QAM_symbols
 %% Nq bits per QAM => trainblock heeft lengte (N/2-1)*Nq

@@ -24,33 +24,39 @@ p = 1;
 while p < P
     
 
-    % Training
+    %% Training
     fresp_est = zeros(fftSize, 1);
     for i = 1:fftSize
         qamvalue = qamvector(i) + zeros(Lt,1);
         fresp_est(i) = qamvalue\transpose(fd_packet(i,p:p+Lt-1));
     end
     
-    h_est = ifft(fresp_est, fftSize);
-    t_est = linspace(0,1024,1024);
-    f = linspace(0, fs/2, fftSize);
-    
-    figure;
-    subplot(2,1,1);
-        plot(t_est, h_est);
-        title('Estimate of impulseresponse: time-domain');
-        xlabel('filtertaps');
-        ylabel('Imulse Response amplitude');
-    subplot(2,1,2);
-        plot(f, fresp_est);
-        title('Estimate of impulseresponse: frequency-domain');
-        xlabel('frequency');
-        ylabel('Imulse Response amplitude');
-    
-    %Data
+    %% Make plots of imprespons
+    make_plots = 0;
+    if make_plots == 1
+        h_est = ifft(fresp_est, fftSize);
+        t_est = linspace(0,1024,1024);
+        f = linspace(0, fs/2, fftSize);
+
+        figure;
+        subplot(2,1,1);
+            plot(t_est, h_est);
+            title('Estimate of impulseresponse: time-domain');
+            xlabel('filtertaps');
+            ylabel('Imulse Response amplitude');
+        subplot(2,1,2);
+            plot(f, fresp_est);
+            title('Estimate of impulseresponse: frequency-domain');
+            xlabel('frequency');
+            ylabel('Imulse Response amplitude');
+    end
+    %% Data
     for j = p+Lt : p+Lt+Ld-1
         fd_datapacket = [fd_datapacket, fd_packet(:,j)./fresp_est];
         fd_packet(:,j) = fd_packet(:,j)./fresp_est; 
+        if j == P
+            break
+        end
     end
     
     p = p + Lt + Ld;
