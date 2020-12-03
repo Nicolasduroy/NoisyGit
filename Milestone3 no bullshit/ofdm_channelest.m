@@ -13,7 +13,7 @@ frameSize = fftSize/2-1;
 
 trainblock_length = frameSize*Nq;
 
-Streamblock = randi([0 1], 60*trainblock_length, 1);
+Streamblock = randi([0 1], 719*trainblock_length, 1);
 
 trainblock = randi([0 1], trainblock_length, 1);
 
@@ -22,7 +22,7 @@ qamStream = qam_mod(M,Streamblock);
 
 cpr = fftSize/2;
 Lt = 2;
-Ld = 6;
+Ld = 19;
 qamtrain = [];
 
 Tx = ofdm_mod(qamStream, qamtrainblock, frameSize, fftSize, cpr, Ld, Lt);
