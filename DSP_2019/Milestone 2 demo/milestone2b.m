@@ -1,4 +1,4 @@
-% Milestone 2a - Corneel T Jonck and Vincent Vanweddingen (groep 5)
+% Milestone 2b - Corneel T Jonck, Emile Clarisse and Nicolas du Roy (group 16)
 
 clear all;
 close all;
@@ -13,6 +13,7 @@ fftSize = 2^10;
 qamNo = fftSize/2-1;
 z = Nq*qamNo;
 thresh = -110; %% for bitloading, cfr figure 1
+thresh2 = -90;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % QAM OFDM without bitloading
@@ -102,8 +103,8 @@ imageRx = bitstreamtoimage(rxBitStream, imageSize, bitsPerPixel);
 
 % Plot images
 figure;
-subplot(2,1,1); colormap(colorMap); image(imageData); axis image; title('Original image'); drawnow;
-subplot(2,1,2); colormap(colorMap); image(imageRx); axis image; title(['Received image']); drawnow;
+subplot(2,1,1); colormap(colorMap); image(imageData); axis image; title('Original image'); 
+subplot(2,1,2); colormap(colorMap); image(imageRx); axis image; title(['Received image']); 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% With On Off bit loading
@@ -117,7 +118,7 @@ frameSizeTot = qamNo;
 % create bit mask sequence
 channelSelector = zeros(511, 1);
 for i = 1:511
-    if spectro_h(i) < thresh
+    if spectro_h(i) < thresh || spectro_h(i) > thresh2
         channelSelector(i) = 0;
     else
         channelSelector(i) = 1;
@@ -204,6 +205,6 @@ bitrate = Nq*qamNo/(Tu+Time_cpr);
 imageRx = bitstreamtoimage(rxBitStream, imageSize, bitsPerPixel);
 % Plot images
 figure;
-subplot(2,1,1); colormap(colorMap); image(imageData); axis image; title('Original image'); drawnow;
-subplot(2,1,2); colormap(colorMap); image(imageRx); axis image; title(['Received image']); drawnow;
+subplot(2,1,1); colormap(colorMap); image(imageData); axis image; title('Original image');
+subplot(2,1,2); colormap(colorMap); image(imageRx); axis image; title(['Received image']); 
 

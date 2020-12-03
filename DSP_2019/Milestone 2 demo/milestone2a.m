@@ -1,4 +1,4 @@
-% Milestone 2b - Corneel T Jonck and Vincent Vanweddingen (groep 5)
+% Milestone 2a - Corneel T Jonck, Emile Clarisse and Nicolas du Roy (group 16)
 
 clear all;
 close all;
@@ -6,8 +6,8 @@ close all;
 % compute the BER vs SNR curves for different QAM constellation sizes plotted in one figure.
 % For this you should use the qam experiment.m file of Exercise 3-1.
 
-BER = zeros(100,6);
-SNR = [0.25:0.25:25];
+BER = zeros(26,6);
+SNR = [0:1:25];
 
 % Let the constellation size go from 2^1 to 2^6
 for Nq = 1:6
@@ -17,7 +17,7 @@ for Nq = 1:6
     length = ceil(length/Nq)*Nq;
     sequence = randi([0 1], length, 1);
     
-    for n = 1:100
+    for n = 1:26
         % normalized QAM mod
         qamModSequence = qam_mod(M,sequence);
         avgSigPow = mean(abs(qamModSequence).^2,1);

@@ -29,6 +29,7 @@ end
 Tx = ofdm_mod(qamtrain, frameSize, cpr);
 
 load("IRest.mat");
+
 impRespCh = h;
 
 [spectro_impRespCh, f_impRespCh, t_impRespCh] = spectrogram(impRespCh, 2^8, 2^7, fftSize, fs);
@@ -46,7 +47,7 @@ spectro_impRespCh = transpose(mean(20*log(abs(spectro_impRespCh)),2));
 %     xlabel('f (Hz)');
 %     ylabel('Impulse Response (dB)');
     
-% Rx = fftfilt(impRespCh,ofdmtrain);
+%Rx = fftfilt(impRespCh,ofdmtrain);
 pulse = [0; 1; 1; 1; 0];
 IRlength = 511;
 [simin, nbsecs, fs] = initparams(Tx, pulse, IRlength, fs);

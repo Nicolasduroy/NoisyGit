@@ -35,7 +35,7 @@ T = toeplitz(qamtrainblock);
 %%%% eerste Lt frames, dan LD frames data, dan terug Lt frames:
 for jj = 1:P
     estimate = [];
-    if ~mod(jj,Lt+Ld) = 1
+    if ~mod(jj,Lt+Ld) == 1
         for ii = jj:jj+Lt
             rec_qamtrain = packet(ii(1:framesize);
             estimate(i) = T\rec_qamtrain;    

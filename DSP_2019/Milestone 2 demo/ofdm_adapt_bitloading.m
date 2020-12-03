@@ -1,4 +1,4 @@
-% Milestone 2a - Corneel T Jonck and Vincent Vanweddingen (groep 5)
+% OFDM ADAPT BITLOADING - Corneel T Jonck, Emile Clarisse and Nicolas du Roy (group 16)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % QAM OFDM Adaptive Bitloading
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -87,14 +87,6 @@ rxBitStream = rxBitStream(1:size(bitStream,1),:);
 berTransmission = ber(bitStream,rxBitStream);
 disp('BER with adaptive bitloading: ');
 disp(berTransmission);
-
-% Compute bit transmission rate
-% Per periode Tu (= 1/delta_f) wordt Sum(b(k)) bits doorgestuurd of Nq*N
-% Tijdens cyclic prefix wordt geen info doorgestuurd. 
-f_max = 8000; % function of fftSize
-Time_cpr = (cpr/qam_no)/(f_max/P);
-Tu = 1/(f_max/P);
-bittransmission = sum(b(k))/(Tu+Time_cpr);
 
 % Construct image from bitstream
 imageRx = bitstreamtoimage(rxBitStream, imageSize, bitsPerPixel);

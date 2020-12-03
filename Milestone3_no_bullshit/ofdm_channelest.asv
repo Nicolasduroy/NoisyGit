@@ -5,6 +5,9 @@ fs = 16000;
 Nq = 8;
 M = 2^Nq;
 fftSize = 2^10; %% DFTsize N
+cpr = fftSize/2;
+Lt = 2;
+Ld = 6;
 
 %% Trainblock needed of N/2-1 QAM_symbols
 %% Nq bits per QAM => trainblock heeft lengte (N/2-1)*Nq
@@ -13,16 +16,29 @@ frameSize = fftSize/2-1;
 
 trainblock_length = frameSize*Nq;
 
-Streamblock = randi([0 1], 60*trainblock_length, 1);
+[Streamblock, imageData, colorMap, imageSize, bitsPerPixel] = imagetobitstream('image.bmp');
+
+% Append with zeros to match multiple of Nq
+oldLength = size(Streamblock,1);
+newLength = trainblock_length*ceil(oldLength/trainblock_length);
+
+AppendedStreamblock  = zeros(newLength,1);
+AppendedStreamblock(1:oldLength) = Streamblock; 
+Streamblock = AppendedStreamblock;
+
+oldLength = size(Streamblock,1);
+newLength = Ld*ceil(oldLength/Ld);
+
+AppendedStreamblock  = zeros(newLength,1);
+AppendedStreamblock(1:oldLength) = Streamblock; 
+Streamblock = AppendedStreamblock;
+
 
 trainblock = randi([0 1], trainblock_length, 1);
 
 qamtrainblock = qam_mod(M,trainblock);
 qamStream = qam_mod(M,Streamblock);
 
-cpr = fftSize/2;
-Lt = 2;
-Ld = 6;
 qamtrain = [];
 
 Tx = ofdm_mod(qamStream, qamtrainblock, frameSize, fftSize, cpr, Ld, Lt);

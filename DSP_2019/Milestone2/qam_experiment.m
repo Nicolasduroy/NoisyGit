@@ -24,7 +24,7 @@ scatterplot(qamModSeq);
 % signal power. What are the normalization factors for the different constellation sizes?
 
 avgSigPow = mean(abs(qamModSeq).^2,1);
-norQamModSeq = qamModSeq/sqrt(avgSigPow);
+norQamModSeq = qamModSeq/sqrt(avgSigPow); %Average power over all symbols is one
 scatterplot(norQamModSeq);
 title('Normalized QAM');
 
