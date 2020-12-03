@@ -2,12 +2,13 @@ clear all;
 close all;
 
 fs = 16000;
-Nq = 8;
+Nq = 7;
 M = 2^Nq;
 fftSize = 2^10; %% DFTsize N
 cpr = fftSize/2;
-Lt = 2;
+Lt = 4;
 Ld = 2;
+
 
 %% Trainblock needed of N/2-1 QAM_symbols
 %% Nq bits per QAM => trainblock heeft lengte (N/2-1)*Nq
@@ -43,17 +44,17 @@ t = linspace(0,500,500);
 fresp_h = fft(h, fftSize);
 f = linspace(0, fs/2, fftSize);
 
-figure;
-subplot(2,1,1);
-    plot(t, h);
-    title('impulseresponse time-domain');
-    xlabel('filtertaps');
-    ylabel('Imulse Response amplitude');
-subplot(2,1,2);
-    plot(f, fresp_h);
-    title('impulseresponse frequencydomain');
-    xlabel('Frequency');
-    ylabel('Imulse Response amplitude');
+% figure;
+% subplot(2,1,1);
+%     plot(t, h);
+%     title('impulseresponse time-domain');
+%     xlabel('filtertaps');
+%     ylabel('Imulse Response amplitude');
+% subplot(2,1,2);
+%     plot(f, fresp_h);
+%     title('impulseresponse frequencydomain');
+%     xlabel('Frequency');
+%     ylabel('Imulse Response amplitude');
 
     
 Rx = fftfilt(impRespCh,Tx);
@@ -63,7 +64,7 @@ Rx = fftfilt(impRespCh,Tx);
 % sim('recplay');
 % out = simout.signals.values;
 
-% Rx = alignIO(out, pulse, IRlength);
+% Rx = alignIO(out, pulse, IRlength, length(Tx));
 
 %% OFDM-demodulate
 [receivedQam, fresp_est] = visualize_demod(Rx, fftSize, cpr, qamtrainblock, fs, Lt, Ld, M);
@@ -84,8 +85,7 @@ Rx = fftfilt(impRespCh,Tx);
 %     ylabel('Imulse Response amplitude');
 
 %% QAM-demodulate
-receivedSeq = qam_demod(receivedQam(:,1),M);
-%received_trainblock = receivedSeq(1+0*frameSize*Nq:1*frameSize*Nq);
+receivedSeq = qam_demod(receivedQam,M);
 
 %% calculate BER
 ber = ber(receivedSeq, Streamblock);

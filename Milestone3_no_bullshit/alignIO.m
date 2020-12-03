@@ -1,8 +1,8 @@
-function [out_aligned] = alignIO(out,pulse, IRlength)
+function [out_aligned] = alignIO(out,pulse, IRlength, LTx)
 
 d = finddelay(pulse, out);
 
-out_aligned = out(d+IRlength-20:end);
+out_aligned = out(d+IRlength-20:d+IRlength-20+LTx-1);
 
 end
 

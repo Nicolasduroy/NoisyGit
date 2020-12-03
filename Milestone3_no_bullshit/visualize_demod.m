@@ -29,16 +29,16 @@ while p < P
     %% Data
     for j = p+Lt : p+Lt+Ld-1
         fd_datapacket = [fd_datapacket, fd_packet(:,j)./fresp_est];
-        if j == P
+        if j == (P)
             break
         end
     end
     fd_datapacket_tmp = fd_datapacket(2:fftSize/2,:); %%% Get rid of the redundant symbols
     [~,P_data_tmp] = size( fd_datapacket_tmp );
     demodulated_sequence_tmp = reshape(fd_datapacket_tmp,qamNo*P_data_tmp,1);
-    newdata = qam_demod(demodulated_sequence_tmp,M);
+    newdata = qam_demod(demodulated_sequence_tmp, M);
     %% Make plots of impresponse
-     pause(0.2);
+     
     if init_plot == 1
         figure;
     end
@@ -73,6 +73,7 @@ while p < P
     
     
     p = p + Lt + Ld;
+    pause(0.02);
 end
     fd_datapacket = fd_datapacket(2:fftSize/2,:); %%% Get rid of the redundant symbols
     [~,P_data] = size( fd_datapacket );

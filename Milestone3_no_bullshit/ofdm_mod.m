@@ -23,9 +23,10 @@ Datapacket = reshape(qamStream, qamNo, P_data);
 %% Setup whole package
 packet = [];
 i = 1;
-while i < C
-    if i+Ld-1 > C
-        packet = [packet,Trainingpacket, Datapacket(:,i:end)];
+while i < C 
+    if i+2*Ld > C
+        packet = [packet,Trainingpacket, Datapacket(:,i:i+Ld-1)];
+        packet = [packet,Trainingpacket, Datapacket(:,i+Ld:end)];
     else
         packet = [packet,Trainingpacket, Datapacket(:,i:i+Ld-1)];
     end
