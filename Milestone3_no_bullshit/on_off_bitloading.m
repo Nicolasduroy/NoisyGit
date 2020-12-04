@@ -32,24 +32,31 @@ Ld = 19;
 Tx = ofdm_mod([], qamtrainblock, frameSize, fftSize, cpr, 0, Lt);
 
 %% sending...
-%Rx...
+
+pulse = [0; 1; 1; 1; 0];
+IRlength = 511;
+[simin, nbsecs, fs] = initparams(Tx, pulse, IRlength, fs);
+sim('recplay');
+out = simout.signals.values;
+
+Rx = alignIO(out, pulse, IRlength, length(Tx));
 %% Receiving
 [~, fresp_est] = ofdm_demod(Rx, fftSize, cpr, qamtrainblock, fs, Lt, 0);
 
 %% create bit mask sequence
-channelSelector = 1 + zeros(fftsize/2-1, 1);
+channelSelector = ones(fftSize/2-1, 1);
 channel_del = ceil(length(channelSelector)*(1-BWusage/100));
-min = min(fresp_est);
 
-[~,Ix] = sort(fresp_est);
+[~,Ix] = sort(fresp_est(2:fftSize/2-1));
 
-for j = 1:channel_del
-    channelSelector(Ix(j)) = 0;
+for k = 1:channel_del
+    index = Ix(k);
+    channelSelector(index) = 0;
 end
 
 % Adjust qamNo for on/off bitloading
 qamNo = sum(channelSelector);  
-z = Nq*qamNo;
+z = Nq*frameSize;
 
 %% Create streamblock from image
 % Convert BMP image to bitstream
@@ -70,7 +77,7 @@ qamStream = qam_mod(M,AppendedBitStream);
 
 lengthCS = length(channelSelector);
 lengthStream= length(qamStream);
-iterations = lengthStream/qamNo; %%% amount of iterations is amount of ofdm_packagess
+iterations = lengthStream/frameSize; %%% amount of iterations is amount of ofdm_packagess
 n = 1;                           %%% REMEMBER qamNo has been adjusted in line 127, so iterations is longer then without on/off bitloading
 tmp = zeros(iterations*lengthCS,1);         %%%lenght QAMstream with space for the zero's. 
 for i = 1:iterations-1                      %%%% precode the zero's in the QAMstream
@@ -84,11 +91,17 @@ end
 qamStreamOnOffBitLoaded = tmp; %%%Just the new qamstream made here-above
 
 %% OFDM modulation
-ofdmStream = ofdm_mod(qamStreamOnOffBitLoaded, qamtrainblock, frameSizeTot, cpr, Lt, Ld); %%%%same
+ofdmStream = ofdm_mod(qamStreamOnOffBitLoaded, qamtrainblock, frameSizeTot, fftSize, cpr, Lt, Ld); %%%%same
 
 %% Sending...
-% Rx = ???
 
+pulse = [0; 1; 1; 1; 0];
+IRlength = 511;
+[simin, nbsecs, fs] = initparams(ofdmStream, pulse, IRlength, fs);
+sim('recplay');
+out = simout.signals.values;
+
+Rx = alignIO(out, pulse, IRlength, length(ofdmStream));
 %% Receiving
 [receivedQam, fresp_est] = visualize_demod(Rx, fftSize, cpr, qamtrainblock, fs, Lt, Ld, M);
 
@@ -96,4 +109,4 @@ ofdmStream = ofdm_mod(qamStreamOnOffBitLoaded, qamtrainblock, frameSizeTot, cpr,
 receivedSeq = qam_demod(receivedQam,M);
 
 %% calculate BER
-ber = ber(receivedSeq, Streamblock);
+ber = ber(receivedSeq, bitStream);

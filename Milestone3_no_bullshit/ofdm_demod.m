@@ -48,9 +48,11 @@ while p < P
     
 end
 
-
-fd_datapacket = fd_datapacket(2:fftSize/2,:); %%% Get rid of the redundant symbols
-[~,P_data] = size( fd_datapacket );
-demodulatedSequence = reshape(fd_datapacket,qamNo*P_data,1);
-
+    if Ld == 0
+        demodulatedSequence = 1;
+    else
+        fd_datapacket = fd_datapacket(2:fftSize/2,:); %%% Get rid of the redundant symbols
+        [~,P_data] = size( fd_datapacket );
+        demodulatedSequence = reshape(fd_datapacket,qamNo*P_data,1);
+    end
 end

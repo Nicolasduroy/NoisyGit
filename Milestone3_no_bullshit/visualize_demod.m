@@ -39,6 +39,19 @@ while p < P
     fd_datapacket_tmp = fd_datapacket(2:fftSize/2,:); %%% Get rid of the redundant symbols
     [~,P_data_tmp] = size( fd_datapacket_tmp );
     demodulated_sequence_tmp = reshape(fd_datapacket_tmp,qamNo*P_data_tmp,1);
+    % Undoing the on off bit loading
+rxQamStreamOnOffBitloadingUndone = zeros(iterations*qamNo,1);
+n=1;
+for i = 1:iterations-1
+  for j=1:lengthCS
+    if channelSelector(j)==1
+      rxQamStreamOnOffBitloadingUndone(n)= rxQamStream(lengthCS*(i-1)+j);
+      n=n+1;
+    end
+  end
+end
+   
+    
     newdata = qam_demod(demodulated_sequence_tmp, M);
     %% Make plots of impresponse
      
