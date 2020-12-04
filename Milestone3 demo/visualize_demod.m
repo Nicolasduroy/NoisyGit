@@ -21,6 +21,7 @@ IntermediateStream = zeros(length(Streamblock),1);
 init_plot = 1;
 %% Division into training- and dataframes according to Lt and Ld
 p = 1;
+loops = 0;
 while p < P
 
     %% Training
@@ -88,9 +89,10 @@ while p < P
         title('Recieved image');
     init_plot = 0;
     
-    
+    loops = loops + 1
     p = p + Lt + Ld;
-    pause(0.02);
+    frametime = (fftSize+cpr)*(Ld+Lt)/fs;
+    pause(frametime);
 end
 %     fd_datapacket = fd_datapacket(2:fftSize/2,:); %%% Get rid of the redundant symbols
 %     [~,P_data] = size( fd_datapacket );

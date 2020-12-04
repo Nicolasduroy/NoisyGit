@@ -102,7 +102,7 @@ sim('recplay');
 tStart = tic;
 out = simout.signals.values;
 tStop = toc;
-timeElapsed = tStop-tStart
+
 Rx = alignIO(out, pulse, IRlength, length(Tx));
 
 %% Receiving
