@@ -5,6 +5,10 @@ fs = 16000;
 Nq = 5;
 M = 2^Nq;
 fftSize = 2^10; %% DFTsize N
+cpr = fftSize/2;
+Lt = 3;
+Ld = 9;
+
 
 %% Trainblock needed of N/2-1 QAM_symbols
 %% Nq bits per QAM => trainblock heeft lengte (N/2-1)*Nq
@@ -31,39 +35,68 @@ qamtrainblock = qam_mod(M,trainblock);
 qamStream = qam_mod(M,Streamblock);
 
 qamtrain = [];
-%% Prepare for sending...
-cpr = fftSize/2;
-Lt = 3;
-Ld = 9;
+
 Tx = ofdm_mod(qamStream, qamtrainblock, frameSize, fftSize, cpr, Ld, Lt);
-   
-%% Sending...
-pulse = [0; 1; 1; 1; 0];
-IRlength = 511;
-[simin, nbsecs, fs] = initparams(Tx, pulse, IRlength, fs);
-sim('recplay');
-out = simout.signals.values;
 
-Rx = alignIO(out, pulse, IRlength, length(Tx));
+load("IRest.mat");
+impRespCh = h;
+% t = linspace(0,500,500);
+% 
+% fresp_h = fft(h, fftSize);
+% f = linspace(0, fs/2, fftSize);
 
+% figure;
+% subplot(2,1,1);
+%     plot(t, h);
+%     title('impulseresponse time-domain');
+%     xlabel('filtertaps');
+%     ylabel('Imulse Response amplitude');
+% subplot(2,1,2);
+%     plot(f, fresp_h);
+%     title('impulseresponse frequencydomain');
+%     xlabel('Frequency');
+%     ylabel('Imulse Response amplitude');
 
-%% OFDM-demodulate (QAM inside)
+    
+Rx = fftfilt(impRespCh,Tx);
+% pulse = [0; 1; 1; 1; 0];
+% IRlength = 511;
+% [simin, nbsecs, fs] = initparams(Tx, pulse, IRlength, fs);
+% sim('recplay');
+% out = simout.signals.values;
+% 
+% Rx = alignIO(out, pulse, IRlength, length(Tx));
+
+%% OFDM-demodulate
 channelSelector = ones(fftSize/2-1, 1);
-[receivedSeq, fresp_est] = visualize_demod(Rx, fftSize, cpr, qamtrainblock, fs, Lt, Ld, M, channelSelector);
+[receivedQam, fresp_est] = visualize_demod(Rx, fftSize, cpr, qamtrainblock, fs, Lt, Ld, M, channelSelector);
 
+% h_est = ifft(fresp_est, fftSize);
+% t_est = linspace(0,1024,1024);
+% 
+% figure;
+% subplot(2,1,1);
+%     plot(t_est, h_est);
+%     title('Estimate of impulseresponse: time-domain');
+%     xlabel('filtertaps');
+%     ylabel('Imulse Response amplitude');
+% subplot(2,1,2);
+%     plot(f, fresp_est);
+%     title('Estimate of impulseresponse: frequency-domain');
+%     xlabel('frequency');
+%     ylabel('Imulse Response amplitude');
+
+%% QAM-demodulate
+%receivedSeq = qam_demod(receivedQam,M);
+receivedSeq = receivedQam;
 
 %% calculate BER
 ber = ber(receivedSeq, Streamblock);
 
 
-%% PAUSE %%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-pause%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% PAUSE %%%%%%%%%%%%%%%%%%%%%
 
+pause
 
-%% Second part starting...
 clear all;
 close all;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -94,13 +127,11 @@ Ld = 8;
 Tx = ofdm_mod([], qamtrainblock, frameSize, fftSize, cpr, 0, Lt);
 
 %% sending...
-pulse = [0; 1; 1; 1; 0];
-IRlength = 511;
-[simin, nbsecs, fs] = initparams(Tx, pulse, IRlength, fs);
-sim('recplay');
-out = simout.signals.values;
+load("IRest.mat"); 
 
-Rx = alignIO(out, pulse, IRlength, length(Tx));
+impRespCh = h;
+fresp_h = fft(h, fftSize);
+Rx = fftfilt(impRespCh,Tx);
 
 %% Receiving
 [~, fresp_est] = ofdm_demod(Rx, fftSize, cpr, qamtrainblock, fs, Lt, 0);
@@ -172,13 +203,7 @@ qamStreamOnOffBitLoaded = tmp; %%%Just the new qamstream made here-above
 ofdmStream = ofdm_mod(qamStreamOnOffBitLoaded, qamtrainblock, frameSize, fftSize, cpr, Ld, Lt); %%%%same
 
 %% Sending...
-pulse = [0; 1; 1; 1; 0];
-IRlength = 511;
-[simin, nbsecs, fs] = initparams(ofdmStream, pulse, IRlength, fs);
-sim('recplay');
-out = simout.signals.values;
-
-rxOfdmStream = alignIO(out, pulse, IRlength, length(ofdmStream));
+rxOfdmStream = fftfilt(impRespCh,ofdmStream);
 
 %% Receiving
 [receivedQam, fresp_est] = visualize_demod(rxOfdmStream, fftSize, cpr, qamtrainblock, fs, Lt, Ld, M, channelSelector);
