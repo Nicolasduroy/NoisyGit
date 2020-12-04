@@ -2,7 +2,7 @@ clear all;
 close all;
 
 fs = 16000;
-Nq = 5;
+Nq = 2;
 M = 2^Nq;
 fftSize = 2^10; %% DFTsize N
 
@@ -33,12 +33,12 @@ qamStream = qam_mod(M,Streamblock);
 qamtrain = [];
 %% Prepare for sending...
 cpr = fftSize/2;
-Lt = 3;
-Ld = 9;
+Lt = 10;
+Ld = 8;
 Tx = ofdm_mod(qamStream, qamtrainblock, frameSize, fftSize, cpr, Ld, Lt);
    
 %% Sending...
-pulse = [0; 1; 1; 1; 0];
+pulse = [0; 0; 1; 1; 0];
 IRlength = 511;
 [simin, nbsecs, fs] = initparams(Tx, pulse, IRlength, fs);
 sim('recplay');
@@ -75,7 +75,7 @@ close all;
 %% Convert BMP image to bitstream
 %% Init base-parameters
 fs = 16000;
-Nq = 5;
+Nq = 2;
 M = 2^Nq;
 fftSize = 2^10; 
 frameSize = fftSize/2-1;
@@ -89,12 +89,12 @@ qamtrainblock = qam_mod(M,trainblock);
 
 %% Prepare for sending
 cpr = fftSize/2;
-Lt = 7;
+Lt = 10;
 Ld = 8;
 Tx = ofdm_mod([], qamtrainblock, frameSize, fftSize, cpr, 0, Lt);
 
 %% sending...
-pulse = [0; 1; 1; 1; 0];
+pulse = [0; 0; 1; 1; 0];
 IRlength = 511;
 [simin, nbsecs, fs] = initparams(Tx, pulse, IRlength, fs);
 sim('recplay');
