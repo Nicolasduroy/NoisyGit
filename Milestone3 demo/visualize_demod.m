@@ -89,7 +89,7 @@ while p < P
         title('Recieved image');
     init_plot = 0;
     
-    loops = loops + 1
+    loops = loops + 1;
     p = p + Lt + Ld;
     frametime = (fftSize+cpr)*(Ld+Lt)/fs;
     pause(frametime);
