@@ -22,14 +22,15 @@ fd_packet = fft(packet, fftSize); % Per row 1 frequency
 Wk = zeros(length(fd_packet(1,:)), 1);
 step = 0.1;
 normalph = 0.5;
-Hk_start = 1*((rand(1)-.1) + (rand(1)-.1)*1i);
+Hk_start = 1*((rand(1)-.5) + (rand(1)-0.1)*1i);
 Wk_start = (1/(Hk_start'))*(1+0.5);
 demodulated = [];
 %% Training
-[~, Wk(1)] = DDequalization(fd_packet(1,1:Lt), step, normalph, Wk_start, M);
-for r = 2 : fftSize % per tone => per column => fftSize
+[~, Wk(1)] = DDequalization(fd_packet(1,1:Lt), step, normalph, Wk_start, M, fresp_h(1));
+[~, Wk(2)] = DDequalization(fd_packet(2,1:Lt), step, normalph, Wk_start, M, fresp_h(2));
+for r = 3 : fftSize % per tone => per column => fftSize
     rprint = r
-    [~, Wk(r)] = DDequalization(fd_packet(r,1:Lt), step, normalph, Wk(r-1), M, fresp_h(r); % Wk(r-1) bc assume fluent spectrum
+    [~, Wk(r)] = DDequalization(fd_packet(r,1:Lt), step, normalph, Wk(r-1), M, fresp_h(r)); % Wk(r-1) bc assume fluent spectrum
 end
 
 %% Data
