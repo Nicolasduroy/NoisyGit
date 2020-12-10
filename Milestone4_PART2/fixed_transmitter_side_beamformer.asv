@@ -1,0 +1,39 @@
+
+
+[a, b, H12] = function fixed_transmitter_side_beamformer(H1, H2)
+
+if length(H1) ~= length(H2)
+    %Adjust lengths
+end
+
+a = zeros(length(H1), 1);
+b = zeros(length(H2), 1);
+H12 = zeros(length(H2), 1);
+
+for i = 1:length(H1)
+    H12(i) = sqrt(H1(i)*H1(i)'+H2(i)*H2(i)');
+    
+    a(i) = H1(i)'/H12(i);
+    b(i) = H2(i)'/H12(i);
+end
+
+linspace(
+
+figure;
+subplot(3,1,1);
+    plot(impRespCh);
+    title('Time-domain IR');
+    xlabel('Filter-taps');
+    ylabel('Imulse Response');
+subplot(3,1,2);
+    plot(f_impRespCh, spectro_impRespCh);
+    title('Frequency-domain IR');
+    xlabel('f (Hz)');
+    ylabel('Impulse Response (dB)');
+subplot(3,1,3);
+    plot(f_impRespCh, spectro_impRespCh);
+    title('Frequency-domain IR');
+    xlabel('f (Hz)');
+    ylabel('Impulse Response (dB)');
+
+end
