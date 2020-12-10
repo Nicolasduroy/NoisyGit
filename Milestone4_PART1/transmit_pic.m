@@ -42,7 +42,7 @@ IRlength = 511;
 sim('recplay');
 out = simout.signals.values;
 
-Rx = alignIO(out, pulse, IRlength);
+Rx = alignIO(out, pulse, IRlength, length(Tx));
 
 %% Receiving//OFDM-demodulate
 channelselector = ones(fftSize/2-1, 1);
@@ -111,7 +111,7 @@ Rx = alignIO(out, pulse, IRlength, length(Tx));
 %% Receiving
 [~, fresp_est] = ofdm_demod(Rx, fftSize, cpr, Lt, M, qamtrainblock);
 
-make_image = 1;
+make_image = 0;
 f = linspace(0, fs/2, fftSize);
 if make_image == 1
     figure;
