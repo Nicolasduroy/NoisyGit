@@ -96,7 +96,7 @@ qamtrainblock = qam_mod(M,trainblock);
 
 %% Prepare for sending
 cpr = fftSize/2;
-Lt = 50;
+Lt = 25;
 Tx = ofdm_mod([], qamtrainblock, frameSize, fftSize, cpr, Lt);
 
 %% sending...
@@ -111,21 +111,6 @@ Rx = alignIO(out, pulse, IRlength, length(Tx));
 %% Receiving
 [~, fresp_est] = ofdm_demod(Rx, fftSize, cpr, Lt, M, qamtrainblock);
 
-make_image = 0;
-f = linspace(0, fs/2, fftSize);
-if make_image == 1
-    figure;
-    subplot(2,1,1);
-        plot(f,fresp_h );
-        title('impulseresponse time-domain');
-        xlabel('filtertaps');
-        ylabel('Imulse Response amplitude');
-    subplot(2,1,2);
-        plot(f, fresp_est);
-        title('impulseresponse frequencydomain');
-        xlabel('Frequency');
-        ylabel('Imulse Response amplitude');
-end
 
 %% create bit mask sequence
 channelSelector = ones(fftSize/2-1, 1);
