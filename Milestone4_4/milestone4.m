@@ -1,4 +1,4 @@
-Nq = 2;
+Nq = 8;
 M = 2^Nq;
 inputlength = 1000;
 inputsig = randi([0 1], inputlength, 1);
@@ -6,7 +6,7 @@ Xk = qam_mod(M,inputsig);
 
 Hk = (1) + (1)*1i;
 Yk = Hk*Xk;
-Wk = (1/(Hk'))*(1+0.1);
+Wk = (1/(Hk'))*(500);
 normalph = 0.5;
 stepsize = 0.1;
 i=1;
@@ -23,7 +23,7 @@ for j = 1:5
       i=i+1;
     end
     i=1;
-    Wk = (1/(Hk'))*(1+0.1);
+    Wk = (1/(Hk'))*(500);
 end
 for j = 1:5
     hold on
