@@ -5,8 +5,8 @@
 
 
 %%%%% zie slide 29/40
-function [demodulatedSequence, fresp_est] = ofdm_demod(ofdmSeq, fftSize, cpr, Lt, M, fresp_h)
-
+function [demodulatedSequence, fresp_est] = ofdm_demod(ofdmSeq, fftSize, cpr, Lt, M, trainblock)
+ofdmSeq = ofdmSeq/max(abs(ofdmSeq));
 %% Unchanged part for training/Data
 P = length(ofdmSeq)/(fftSize+cpr); % P is amount of columns basically
 qamNo = fftSize/2-1;
@@ -16,21 +16,21 @@ packet = reshape(ofdmSeq, (fftSize+cpr), P);
 packet = packet((cpr+1):(fftSize+cpr),:);
 fd_packet = fft(packet, fftSize); % Per row 1 frequency
 
+qamvector = [0;trainblock;0;flipud(conj(trainblock))];
+
 %% Division into training- and dataframes according to Lt and Ld
 % first do for every freq: DDequalization for trainingframes
 % First Lt columns are the trainingframes
-Wk = zeros(length(fd_packet(1,:)), 1);
-step = 0.1;
+Wk = zeros(fftSize, 1);
+step = 0.3;
 normalph = 0.5;
-Hk_start = 1*((rand(1)-.5) + (rand(1)-0.1)*1i);
-Wk_start = (1/(Hk_start'))*(1+0.5);
 demodulated = [];
 %% Training
-[~, Wk(1)] = DDequalization(fd_packet(1,1:Lt), step, normalph, Wk_start, M, fresp_h(1));
-[~, Wk(2)] = DDequalization(fd_packet(2,1:Lt), step, normalph, Wk_start, M, fresp_h(2));
-for r = 3 : fftSize % per tone => per column => fftSize
-    rprint = r
-    [~, Wk(r)] = DDequalization(fd_packet(r,1:Lt), step, normalph, Wk(r-1), M, fresp_h(r)); % Wk(r-1) bc assume fluent spectrum
+Hk = zeros(fftSize, 1);
+for r = 1:fftSize
+    qamvalue = qamvector(r) + zeros(Lt,1);
+    Hk(r) = qamvalue\transpose(fd_packet(r,1:Lt));
+    Wk(r) = (1/(Hk(r)'));
 end
 
 %% Data
@@ -39,13 +39,13 @@ end
 if P > Lt
     for c = Lt+1 : amnt_columns 
         for r2 = 2 : fftSize/2 % per tone => per column => 2:fftSize/2 because only necessary symbols needed (pleonasm)
-            [X_est, Wk(r2)] = DDequalization(fd_packet(r2,c), step, normalph, Wk(r2), M);
+            [X_est, Wk(r2)] = DDequalization(fd_packet(r2,c), step, normalph, Wk(r2), M, qamvector(1), 0);
             demodulated = [demodulated; X_est];
         end
     end
     demodulatedSequence = demodulated;
-% else
-%     demodulatedSequence = [];
+else
+    demodulatedSequence = [];
 end
-fresp_est = Wk;
+fresp_est = Hk;
 end

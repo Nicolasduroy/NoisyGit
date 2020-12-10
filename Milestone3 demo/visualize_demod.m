@@ -42,6 +42,9 @@ while p < P
     [~,P_data_tmp] = size( fd_datapacket_tmp );
     demodulated_sequence_tmp = reshape(fd_datapacket_tmp,frameSize*P_data_tmp,1);
     
+    jprint = j
+    P_data_tmpprint = P_data_tmp
+    
     rxQamStreamOnOffBitloadingUndone = zeros(P_data_tmp*qamNo,1);
     n=1;                                                        %% This means we use instead of iterations: the P_data (#columns)
     for it = 1:P_data_tmp 
