@@ -1,140 +1,140 @@
-% clear all;
-% close all;
-% 
-% %% Init base-parameters
-% fs = 16000;
-% Nq = 4;
-% M = 2^Nq;
-% fftSize = 2^11; %% DFTsize N
-% frameSize = fftSize/2-1;
-% trainblock_length = frameSize*Nq;
-% z = Nq*frameSize;
-% 
-% %% Prepare for sending
-% cpr = fftSize/2;
-% Lt = 100;
-% 
-% %% Create trainingblock
-% trainblock = randi([0 1], trainblock_length, 1);
-% qamtrainblock = qam_mod(M,trainblock);
-% 
-% %% pre- a, b
-% a = ones(fftSize, 1);
-% b = ones(fftSize, 1);
-% 
-% %% Channel_1 init
-% [Tx1,~] = ofdm_mod_stereo([], qamtrainblock, frameSize, fftSize, cpr, Lt, a, b);
-% pulse = [zeros(200,1);ones(50,1)*2000;zeros(200,1)];
-% pulse2 = [zeros(200,1);ones(50,1)*750;zeros(200,1)];
-% IRlength = fs;
-% [simin, nbsecs, fs] = initparams(Tx1, zeros(length(Tx1),1), pulse, IRlength, fs);
-% sim('recplay');
-% out = simout.signals.values;
-% figure;
-%     tt = linspace(0,ceil(length(out)/fs), length(out));
-%     plot(tt, out);
-% Rx = alignIO(out, pulse2, IRlength, length(Tx1));
-% [~, IR1] = ofdm_demod(Rx, fftSize, cpr, Lt, M, qamtrainblock);
-% impRespCh1 = ifft(IR1, fftSize);
-% 
-% t = linspace(0,length(impRespCh1),length(impRespCh1));
-% f = linspace(0, fs/2, fftSize);
-% figure;
-% subplot(2,1,1);
-%     plot(t, impRespCh1);
-%     title('impulseresponse1 time-domain');
-%     xlabel('filtertaps');
-%     ylabel('Imulse Response amplitude');
-% subplot(2,1,2);
-%     plot(f, IR1);
-%     title('impulseresponse1 frequencydomain');
-%     xlabel('Frequency');
-%     ylabel('Imulse Response amplitude');
-% 
-% pause(1)    
-%     
-% %% Channel_2 init
-% [~,Tx2] = ofdm_mod_stereo([], qamtrainblock, frameSize, fftSize, cpr, Lt, a, b);
-% [simin, nbsecs, fs] = initparams(zeros(length(Tx2), 1), Tx2, pulse, IRlength, fs);
-% sim('recplay');
-% out = simout.signals.values;
-% figure;
-%     tt = linspace(0,ceil(length(out)/fs), length(out));
-%     plot(tt, out);
-% Rx = alignIO(out, pulse2, IRlength, length(Tx2));
-% [~, IR2] = ofdm_demod(Rx, fftSize, cpr, Lt, M, qamtrainblock);
-% impRespCh2 = ifft(IR2, fftSize);
-% 
-% t = linspace(0,length(impRespCh2),length(impRespCh2));
-% f = linspace(0, fs/2, fftSize);
-% figure;
-% subplot(2,1,1);
-%     plot(t, impRespCh2);
-%     title('impulseresponse2 time-domain');
-%     xlabel('filtertaps');
-%     ylabel('Imulse Response amplitude');
-% subplot(2,1,2);
-%     plot(f, IR2);
-%     title('impulseresponse2 frequencydomain');
-%     xlabel('Frequency');
-%     ylabel('Imulse Response amplitude');
-% 
-% %% Create a, b
-% [a, b, H12] = fixed_transmitter_side_beamformer(IR1, IR2);
-% a(1) = 0;
-% a(fftSize/2+1) = 0;
-% 
-% b(1) = 0;
-% b(fftSize/2+1) = 0;
-% 
-% %% Create streamblock from image
-% % Convert BMP image to bitstream
-% [bitStream, imageData, colorMap, imageSize, bitsPerPixel] = imagetobitstream('image.bmp');
-% 
-% % Append with zeros to match multiple of NQ
-% oldLength = size(bitStream,1);
-% newLength = z*ceil(oldLength/z); 
-% AppendedBitStream  = zeros(newLength,1); 
-% AppendedBitStream(1:oldLength) = bitStream; 
-% Streamblock = AppendedBitStream;
-% 
-% %create QAM
-% qamStream = qam_mod(M,Streamblock);
-% 
-% %% Prepare for sending
-% [Tx1,Tx2] = ofdm_mod_stereo(qamStream, qamtrainblock, frameSize, fftSize, cpr, Lt, a, b);
-% 
-% 
-% %% Channel sending....    
-% [simin, nbsecs, fs] = initparams(Tx1, Tx2, pulse, IRlength, fs);
-% sim('recplay');
-% out = simout.signals.values;
-% Rx = alignIO(out, pulse2, IRlength, length(Tx1));
-% 
-% 
-% %% Receiving//OFDM-demodulate
-% channelselector = ones(fftSize/2-1, 1);
-% [receivedSeq, fresp_est] = visualize_demod(Rx, qamtrainblock, fftSize, cpr, fs, Lt, M, channelselector, qamStream);
-% 
-% %% QAM-demodulate
-% %receivedSeq = qam_demod(receivedQam,M);
-% 
-% %% Recreate image
-% imageRx = bitstreamtoimage(receivedSeq, imageSize, bitsPerPixel);
-% 
-% % Plot images
-% figure;
-% subplot(2,1,1); colormap(colorMap); image(imageData); axis image; title('Original image'); drawnow;
-% subplot(2,1,2); colormap(colorMap); image(imageRx); axis image; title(['Received image']); drawnow;
-% 
-% %% calculate BER
-% ber = ber(receivedSeq, Streamblock);
-% 
-% %% PAUSE %%%%%%%%%%%%%%%%%%%%%
-% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% pause%%%%%%%%%%%%%%%%%%%%%%%%%
-% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% %% PAUSE %%%%%%%%%%%%%%%%%%%%%
+clear all;
+close all;
+
+%% Init base-parameters
+fs = 16000;
+Nq = 4;
+M = 2^Nq;
+fftSize = 2^11; %% DFTsize N
+frameSize = fftSize/2-1;
+trainblock_length = frameSize*Nq;
+z = Nq*frameSize;
+
+%% Prepare for sending
+cpr = fftSize/2;
+Lt = 100;
+
+%% Create trainingblock
+trainblock = randi([0 1], trainblock_length, 1);
+qamtrainblock = qam_mod(M,trainblock);
+
+%% pre- a, b
+a = ones(fftSize, 1);
+b = ones(fftSize, 1);
+
+%% Channel_1 init
+[Tx1,~] = ofdm_mod_stereo([], qamtrainblock, frameSize, fftSize, cpr, Lt, a, b);
+pulse = [zeros(200,1);ones(50,1)*2000;zeros(200,1)];
+pulse2 = [zeros(200,1);ones(50,1)*750;zeros(200,1)];
+IRlength = fs;
+[simin, nbsecs, fs] = initparams(Tx1, zeros(length(Tx1),1), pulse, IRlength, fs);
+sim('recplay');
+out = simout.signals.values;
+figure;
+    tt = linspace(0,ceil(length(out)/fs), length(out));
+    plot(tt, out);
+Rx = alignIO(out, pulse2, IRlength, length(Tx1));
+[~, IR1] = ofdm_demod(Rx, fftSize, cpr, Lt, M, qamtrainblock);
+impRespCh1 = ifft(IR1, fftSize);
+
+t = linspace(0,length(impRespCh1),length(impRespCh1));
+f = linspace(0, fs/2, fftSize);
+figure;
+subplot(2,1,1);
+    plot(t, impRespCh1);
+    title('impulseresponse1 time-domain');
+    xlabel('filtertaps');
+    ylabel('Imulse Response amplitude');
+subplot(2,1,2);
+    plot(f, IR1);
+    title('impulseresponse1 frequencydomain');
+    xlabel('Frequency');
+    ylabel('Imulse Response amplitude');
+
+pause(1)    
+    
+%% Channel_2 init
+[~,Tx2] = ofdm_mod_stereo([], qamtrainblock, frameSize, fftSize, cpr, Lt, a, b);
+[simin, nbsecs, fs] = initparams(zeros(length(Tx2), 1), Tx2, pulse, IRlength, fs);
+sim('recplay');
+out = simout.signals.values;
+figure;
+    tt = linspace(0,ceil(length(out)/fs), length(out));
+    plot(tt, out);
+Rx = alignIO(out, pulse2, IRlength, length(Tx2));
+[~, IR2] = ofdm_demod(Rx, fftSize, cpr, Lt, M, qamtrainblock);
+impRespCh2 = ifft(IR2, fftSize);
+
+t = linspace(0,length(impRespCh2),length(impRespCh2));
+f = linspace(0, fs/2, fftSize);
+figure;
+subplot(2,1,1);
+    plot(t, impRespCh2);
+    title('impulseresponse2 time-domain');
+    xlabel('filtertaps');
+    ylabel('Imulse Response amplitude');
+subplot(2,1,2);
+    plot(f, IR2);
+    title('impulseresponse2 frequencydomain');
+    xlabel('Frequency');
+    ylabel('Imulse Response amplitude');
+
+%% Create a, b
+[a, b, H12] = fixed_transmitter_side_beamformer(IR1, IR2);
+a(1) = 0;
+a(fftSize/2+1) = 0;
+
+b(1) = 0;
+b(fftSize/2+1) = 0;
+
+%% Create streamblock from image
+% Convert BMP image to bitstream
+[bitStream, imageData, colorMap, imageSize, bitsPerPixel] = imagetobitstream('image.bmp');
+
+% Append with zeros to match multiple of NQ
+oldLength = size(bitStream,1);
+newLength = z*ceil(oldLength/z); 
+AppendedBitStream  = zeros(newLength,1); 
+AppendedBitStream(1:oldLength) = bitStream; 
+Streamblock = AppendedBitStream;
+
+%create QAM
+qamStream = qam_mod(M,Streamblock);
+
+%% Prepare for sending
+[Tx1,Tx2] = ofdm_mod_stereo(qamStream, qamtrainblock, frameSize, fftSize, cpr, Lt, a, b);
+
+
+%% Channel sending....    
+[simin, nbsecs, fs] = initparams(Tx1, Tx2, pulse, IRlength, fs);
+sim('recplay');
+out = simout.signals.values;
+Rx = alignIO(out, pulse2, IRlength, length(Tx1));
+
+
+%% Receiving//OFDM-demodulate
+channelselector = ones(fftSize/2-1, 1);
+[receivedSeq, fresp_est] = visualize_demod(Rx, qamtrainblock, fftSize, cpr, fs, Lt, M, channelselector, qamStream);
+
+%% QAM-demodulate
+%receivedSeq = qam_demod(receivedQam,M);
+
+%% Recreate image
+imageRx = bitstreamtoimage(receivedSeq, imageSize, bitsPerPixel);
+
+% Plot images
+figure;
+subplot(2,1,1); colormap(colorMap); image(imageData); axis image; title('Original image'); drawnow;
+subplot(2,1,2); colormap(colorMap); image(imageRx); axis image; title(['Received image']); drawnow;
+
+%% calculate BER
+ber = ber(receivedSeq, Streamblock);
+
+%% PAUSE %%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+pause%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% PAUSE %%%%%%%%%%%%%%%%%%%%%
 
 
 %% Second part starting...
