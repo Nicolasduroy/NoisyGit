@@ -81,7 +81,7 @@ for loops  =  1 : ceil((P-Lt)/Ld)
         figure;
     end
     h_est = ifft(fresp_est, fftSize);
-    t_est = linspace(0,1024,1024);
+    t_est = linspace(0,fftSize,fftSize);
     f = linspace(0, fs/2, fftSize);
     subplot(2,2,1);
         im1 = plot(t_est, h_est);

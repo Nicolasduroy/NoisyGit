@@ -10,9 +10,15 @@
 function [simin, nbsecs, fs] = initparams(toplay1, toplay2, pulse, IRlength, fs)
 
 % Scale by 1/max to avoid clipping:
-maxToplay = max(toplay);
-if maxToplay ~= 0 % check if not equal to zero
-  toplay = toplay/maxToplay;
+maxToplay1 = max(toplay1);
+if maxToplay1 ~= 0 % check if not equal to zero
+  toplay1 = toplay1/maxToplay1;
+end
+
+% Scale by 1/max to avoid clipping:
+maxToplay2 = max(toplay2);
+if maxToplay2 ~= 0 % check if not equal to zero
+  toplay2 = toplay2/maxToplay2;
 end
 
 %%% length IR = 511
@@ -23,5 +29,5 @@ IR_silence = zeros(IRlength,1);
 column1 = [zeros(2*fs,1);pulse; IR_silence; toplay1; zeros(fs,1)];
 column2 = [zeros(2*fs,1);pulse; IR_silence; toplay2; zeros(fs,1)];
 simin = [column1, column2];
-nbsecs = ceil(size(column, 1)/fs);
+nbsecs = ceil(size(column1, 1)/fs);
 

@@ -152,6 +152,7 @@ impRespCh2 = IR1;
 t = linspace(0,length(impRespCh1),length(impRespCh1));
 fresp_h2 = fft(impRespCh2, fftSize);
 f = linspace(0, fs/2, fftSize);
+
 figure;
 subplot(2,1,1);
     plot(t, impRespCh2);

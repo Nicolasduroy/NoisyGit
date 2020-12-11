@@ -36,7 +36,7 @@ Lt = 50;
 Tx = ofdm_mod(qamStream, qamtrainblock, frameSize, fftSize, cpr, Lt);
 
 %% Channel//Sending...
-pulse = [0 ;0 ;0 ;0; 0; 0; 0; 1; 1; 1; 0; 0; 0; 0; 0; 0; 0; 0];
+pulse = [0; 0; 0; 10; 0; 0; 0];
 IRlength = 511;
 [simin, nbsecs, fs] = initparams(Tx, pulse, IRlength, fs);
 sim('recplay');
@@ -100,7 +100,7 @@ Lt = 25;
 Tx = ofdm_mod([], qamtrainblock, frameSize, fftSize, cpr, Lt);
 
 %% sending...
-pulse = [0 ;0 ;0 ;0; 0; 0; 0; 1; 1; 1; 0; 0; 0; 0; 0; 0; 0; 0];
+pulse = [0; 0; 0; 10; 0; 0; 0];
 IRlength = 511;
 [simin, nbsecs, fs] = initparams(Tx, pulse, IRlength, fs);
 
@@ -163,7 +163,7 @@ qamStreamOnOffBitLoaded = tmp; %%%Just the new qamstream made here-above
 ofdmStream = ofdm_mod(qamStreamOnOffBitLoaded, qamtrainblock, frameSize, fftSize, cpr, Lt); %%%%same
 
 %% Sending...
-pulse = [0 ;0 ;0 ;0; 0; 0; 0; 1; 1; 1; 0; 0; 0; 0; 0; 0; 0; 0];
+pulse = [0; 0; 0; 10; 0; 0; 0];
 IRlength = 511;
 [simin, nbsecs, fs] = initparams(ofdmStream, pulse, IRlength, fs);
 sim('recplay');
